@@ -1,32 +1,261 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PMKS UPGR8 QR Scanner</title>
+  <title>PMKS UPGR8 — QR Scanner</title>
+
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 60px auto;
+      margin: 0;
       padding: 20px;
-      text-align: center;
-      background: #f3f6fa;
-      color: #17324d;
+      background: #f1f5f9;
+      color: #172b4d;
+      font-family: Arial, sans-serif;
     }
+
     main {
+      max-width: 540px;
+      margin: 20px auto;
+      padding: 22px;
       background: white;
-      padding: 30px;
       border-radius: 16px;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, .08);
     }
+
+    h1 { font-size: 24px; margin-bottom: 8px; }
+
+    p { line-height: 1.5; }
+
+    .muted { color: #64748b; font-size: 14px; }
+
+    #reader {
+      width: 100%;
+      margin-top: 18px;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 9px;
+      background: #0f766e;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: .6; }
+
+    .secondary {
+      background: #e2e8f0;
+      color: #172b4d;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 13px;
+      border-radius: 9px;
+      background: #e0f2fe;
+      color: #075985;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    .error { background: #fee2e2; color: #991b1b; }
   </style>
 </head>
+
 <body>
   <main>
     <h1>PMKS UPGR8</h1>
-    <p>QR Attendance Scanner</p>
-    <p>GitHub Pages setup is in progress.</p>
+    <p class="muted">
+      Pengimbas QR kehadiran · 1 Disember 2026
+    </p>
+
+    <p>
+      Pastikan urus setia telah log masuk ke sistem kehadiran
+      menggunakan akaun JSM sebelum mengimbas peserta.
+    </p>
+
+    <div id="reader"></div>
+
+    <button id="startBtn" type="button">Buka Kamera</button>
+    <button id="stopBtn" class="secondary" type="button" disabled>
+      Hentikan Kamera
+    </button>
+
+    <div id="message" class="message" role="status">
+      Tekan “Buka Kamera” dan benarkan akses kamera.
+    </div>
   </main>
+
+  <script>
+    // URL deployment Apps Script. URL ini bukan rahsia.
+    const APPS_SCRIPT_URL =
+      'https://script.google.com/a/macros/jsm.gov.my/s/AKfycbz9TGDNPk5xdPT-PkjliX78NlVGyyewDImOynxWZM6aW6dkseOJPNZIRaTFfYQmO--azg/exec';
+
+    const messageBox = document.getElementById('message');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    let scanner = null;
+    let running = false;
+    let redirecting = false;
+
+    function showMessage(text, error) {
+      messageBox.textContent = text;
+      messageBox.className = 'message' + (error ? ' error' : '');
+    }
+
+    function extractRegistrationId(decodedText) {
+      const value = String(decodedText || '').trim();
+
+      // QR boleh mengandungi ID sahaja.
+      if (/^PMKS2026-\d{4,}$/.test(value)) {
+        return value;
+      }
+
+      // Atau URL yang mempunyai parameter id.
+      try {
+        const url = new URL(value);
+        const id = url.searchParams.get('id') || '';
+
+        if (/^PMKS2026-\d{4,}$/.test(id)) {
+          return id;
+        }
+      } catch (err) {
+        // Kandungan bukan URL.
+      }
+
+      return '';
+    }
+
+    async function stopScanner() {
+      if (!scanner || !running) return;
+
+      try {
+        await scanner.stop();
+      } catch (err) {
+        // Kamera mungkin telah dihentikan oleh pelayar.
+      }
+
+      running = false;
+      stopBtn.disabled = true;
+      startBtn.disabled = false;
+    }
+
+    async function onScanSuccess(decodedText) {
+      if (redirecting) return;
+
+      const id = extractRegistrationId(decodedText);
+
+      if (!id) {
+        showMessage(
+          'QR tidak dikenali. Sila gunakan QR pendaftaran PMKS UPGR8.',
+          true
+        );
+        return;
+      }
+
+      redirecting = true;
+      startBtn.disabled = true;
+      stopBtn.disabled = true;
+
+      showMessage(
+        'QR berjaya dibaca: ' + id +
+        '\nMembuka sistem untuk mengesahkan kehadiran…'
+      );
+
+      await stopScanner();
+
+      const destination = new URL(APPS_SCRIPT_URL);
+      destination.searchParams.set('id', id);
+
+      // Navigasi halaman penuh, bukan fetch/API silang domain.
+      window.location.assign(destination.toString());
+    }
+
+    async function startScanner() {
+      if (running || redirecting) return;
+
+      if (typeof Html5Qrcode === 'undefined') {
+        showMessage(
+          'Pustaka scanner gagal dimuatkan. Semak sambungan internet.',
+          true
+        );
+        return;
+      }
+
+      startBtn.disabled = true;
+      showMessage('Memulakan kamera…');
+
+      try {
+        scanner = new Html5Qrcode('reader');
+
+        await scanner.start(
+          { facingMode: 'environment' },
+          {
+            fps: 10,
+            qrbox: function(viewWidth, viewHeight) {
+              const size = Math.floor(
+                Math.min(viewWidth, viewHeight) * 0.72
+              );
+
+              return {
+                width: Math.max(150, size),
+                height: Math.max(150, size)
+              };
+            },
+            aspectRatio: 1
+          },
+          onScanSuccess,
+          function() {
+            // Abaikan bacaan bingkai yang belum mengandungi QR.
+          }
+        );
+
+        running = true;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+
+        showMessage(
+          'Kamera aktif. Halakan kamera kepada QR peserta.'
+        );
+      } catch (err) {
+        running = false;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+
+        showMessage(
+          'Kamera tidak dapat dibuka. Pastikan laman menggunakan HTTPS, ' +
+          'benarkan akses kamera dan tutup aplikasi lain yang menggunakan kamera.',
+          true
+        );
+      }
+    }
+
+    startBtn.addEventListener('click', startScanner);
+
+    stopBtn.addEventListener('click', async function() {
+      await stopScanner();
+      showMessage('Kamera dihentikan.');
+    });
+
+    window.addEventListener('pagehide', function() {
+      if (scanner && running) {
+        scanner.stop().catch(function() {});
+      }
+    });
+  </script>
 </body>
 </html>
