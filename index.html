@@ -135,30 +135,25 @@
   async function sendScan(regId) {
     if (isLocked) return;
     isLocked = true;
-
     setStatus('Menghantar pendaftaran: ' + regId + '...', 'warn');
 
     try {
-      // Menggunakan fetch no-cors untuk mengelakkan halangan keselamatan pelayar dan redirect 302
+      // Hantar data menggunakan URL-encoded form data (paling dipercayai oleh Apps Script)
       await fetch(API_URL, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: regId })
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'id=' + encodeURIComponent(regId)
       });
 
-      resultBox.classList.remove('hidden');
-      resId.textContent = regId;
-      resTime.textContent = 'Masa: ' + new Date().toLocaleTimeString();
       setStatus('✅ ID ' + regId + ' berjaya dihantar ke Google Sheets!', 'ok');
     } catch (err) {
       setStatus('Ralat penghantaran: ' + err.message, 'bad');
     } finally {
-      // Tunggu 3 saat sebelum boleh mengimbas peserta seterusnya
       setTimeout(() => {
         isLocked = false;
         setStatus('Kamera sedia. Halakan ke kod QR seterusnya.', 'ok');
-      }, 3000);
+      }, 2500);
     }
   }
 
