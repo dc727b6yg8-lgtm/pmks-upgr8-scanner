@@ -7,177 +7,421 @@
   <title>PMKS UPGR8 | Pengimbas Kehadiran</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
-    :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#142536;background:#f2f6fa}
-    *{box-sizing:border-box}body{margin:0;padding:18px 14px 30px}.wrap{max-width:620px;margin:0 auto}.head{background:#102a43;color:white;padding:22px;border-radius:18px 18px 0 0}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8de0d0;font-weight:700}.head h1{font-size:23px;margin:7px 0}.head p{margin:0;color:#d9e5ef;font-size:14px}.panel{background:#fff;padding:18px;border-radius:0 0 18px 18px;box-shadow:0 10px 30px #16324a12}.status{padding:12px 14px;border-radius:10px;margin:12px 0;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere;background:#edf2f7}.ok{background:#e7f8ee;color:#17643b}.bad{background:#ffeded;color:#9b2222}.warn{background:#fff6df;color:#765300}#reader{width:100%;margin:12px auto;border:1px solid #dce5ed;border-radius:12px;overflow:hidden;min-height:30px}button{width:100%;padding:14px 16px;border:0;border-radius:11px;background:#087f8c;color:white;font-size:16px;font-weight:700;margin:7px 0;cursor:pointer}button.secondary{background:#e9eff5;color:#18334a}button:disabled{opacity:.55}small{color:#627487;display:block;line-height:1.5;margin-top:10px}.result{border:1px solid #dbe5ed;border-radius:12px;padding:15px;margin-top:14px}.result h2{margin:0 0 8px;font-size:20px}.name{font-size:19px;font-weight:750;margin:8px 0}.hidden{display:none!important}.foot{text-align:center;color:#66798b;font-size:12px;margin-top:16px}
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #142536;
+      background: #f2f6fa;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 18px 14px 30px; }
+    .wrap { max-width: 620px; margin: 0 auto; }
+    .head {
+      background: #102a43;
+      color: white;
+      padding: 22px;
+      border-radius: 18px 18px 0 0;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #8de0d0;
+      font-weight: 700;
+    }
+    .head h1 { font-size: 23px; margin: 7px 0; }
+    .head p { margin: 0; color: #d9e5ef; font-size: 14px; }
+    .panel {
+      background: #fff;
+      padding: 18px;
+      border-radius: 0 0 18px 18px;
+      box-shadow: 0 10px 30px rgba(22, 50, 74, 0.08);
+    }
+    .status {
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 12px 0;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      background: #edf2f7;
+    }
+    .ok { background: #e7f8ee; color: #17643b; }
+    .bad { background: #ffeded; color: #9b2222; }
+    .warn { background: #fff6df; color: #765300; }
+    #reader {
+      width: 100%;
+      margin: 12px auto;
+      border: 1px solid #dce5ed;
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 20px;
+    }
+    button {
+      width: 100%;
+      padding: 14px 16px;
+      border: 0;
+      border-radius: 11px;
+      background: #087f8c;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      margin: 7px 0;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button.secondary { background: #e9eff5; color: #18334a; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    small {
+      color: #627487;
+      display: block;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+    .result {
+      border: 1px solid #dbe5ed;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 14px;
+      background: #fdfefe;
+    }
+    .result h2 { margin: 0 0 8px; font-size: 20px; }
+    .name { font-size: 19px; font-weight: 700; margin: 8px 0; color: #0b3567; }
+    .hidden { display: none !important; }
+    .foot { text-align: center; color: #66798b; font-size: 12px; margin-top: 16px; }
+    .manual-box {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px dashed #cbd5e1;
+    }
+    .manual-box input {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
   </style>
 </head>
-<body><main class="wrap">
-  <header class="head"><div class="eyebrow">PMKS UPGR8 · 1 Disember 2026</div><h1>Pengimbas Kehadiran</h1><p>Urus setia · Imbas kod QR peserta menggunakan kamera belakang.</p></header>
+<body>
+<main class="wrap">
+  <header class="head">
+    <div class="eyebrow">PMKS UPGR8</div>
+    <h1>Pengimbas Kehadiran</h1>
+    <p>Urus setia · Imbas kod QR peserta menggunakan kamera telefon.</p>
+  </header>
+
   <section class="panel">
     <div id="status" class="status warn" role="status" aria-live="polite">
-  Menyediakan sesi pengimbas…
-</div>
+      Memeriksa sesi pengimbas…
+    </div>
 
-<button id="testBtn" class="secondary" type="button">
-  🔌 Uji Sambungan
-</button>
+    <button id="testBtn" class="secondary" type="button">🔌 Uji Sambungan Apps Script</button>
 
-<div id="reader"></div>
+    <div id="reader"></div>
+
     <button id="startBtn" type="button">📷 Mula Imbas QR</button>
     <button id="stopBtn" class="secondary hidden" type="button">Hentikan Kamera</button>
+
+    <!-- KEPUTUSAN IMBASAN -->
     <section id="result" class="result hidden" aria-live="polite">
-      <h2 id="resultTitle">Keputusan imbasan</h2><div id="resultName" class="name"></div><div id="resultId"></div><div id="resultTime"></div>
+      <h2 id="resultTitle">Keputusan Imbasan</h2>
+      <div id="resultName" class="name">-</div>
+      <div id="resultId" style="font-weight: 600; margin-bottom: 6px;"></div>
+      <div id="resultTime" style="color: #4a5568; font-size: 14px; margin-bottom: 12px;"></div>
       <button id="nextBtn" type="button">Imbas Peserta Seterusnya</button>
     </section>
-    <small>Video kamera diproses dalam pelayar untuk membaca kod QR; gambar tidak disimpan ke telefon. Pastikan halaman dibuka melalui HTTPS dan benarkan akses kamera apabila diminta.</small>
-  </section><div class="foot">Sistem Kehadiran PMKS UPGR8</div>
+
+    <!-- KEMASUKAN MANUAL JIKA KAMERA GAGAL BACA -->
+    <div class="manual-box">
+      <small style="margin: 0 0 6px; font-weight: 600;">Jika kod QR rosak / sukar diimbas:</small>
+      <input type="text" id="manualId" placeholder="Contoh: PMKS2026-0001">
+      <button id="manualBtn" class="secondary" type="button" style="padding: 10px; font-size: 14px;">
+        Sahkan ID Manual
+      </button>
+    </div>
+
+    <small>
+      Video kamera diproses sepenuhnya di dalam pelayar anda dan tidak dimuat naik ke mana-mana pelayan luaran.
+    </small>
+  </section>
+
+  <div class="foot">Sistem Pengesahan Kehadiran PMKS UPGR8</div>
 </main>
+
 <script>
-(function(){
-  //const statusEl=document.getElementById('status'), startBtn=document.getElementById('startBtn'), stopBtn=document.getElementById('stopBtn');
+(function() {
   const statusEl = document.getElementById('status');
-const startBtn = document.getElementById('startBtn');
-const stopBtn = document.getElementById('stopBtn');
-const testBtn = document.getElementById('testBtn');
-  const resultBox=document.getElementById('result'), resultTitle=document.getElementById('resultTitle'), resultName=document.getElementById('resultName'), resultId=document.getElementById('resultId'), resultTime=document.getElementById('resultTime'), nextBtn=document.getElementById('nextBtn');
-  const qs=new URLSearchParams(location.search);
-  const apiUrl=qs.get('api')||''; 
-  console.log(
-  'API URL diterima:',
-  apiUrl ? new URL(apiUrl).origin + new URL(apiUrl).pathname : 'KOSONG'
-);
-  
-  let token=qs.get('token')||'';
-  // Buang token daripada bar alamat sebaik sahaja dibaca.
-  try{history.replaceState(null,'',location.pathname);}catch(e){}
-  let scanner=null, running=false, processing=false;
-  function status(msg,type){statusEl.className='status '+(type||'');statusEl.textContent=msg;}
-  function getId(raw){const text=String(raw||'').trim();const match=text.match(/PMKS2026-\d{4,}/i);return match?match[0].toUpperCase():'';}
-  
-function jsonp(action, id = '') {
-  return new Promise((resolve, reject) => {
-    const callback = 'pmksCb' + Date.now() +
-      Math.floor(Math.random() * 100000);
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const testBtn = document.getElementById('testBtn');
 
-    const script = document.createElement('script');
-    let finished = false;
+  const resultBox = document.getElementById('result');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultName = document.getElementById('resultName');
+  const resultId = document.getElementById('resultId');
+  const resultTime = document.getElementById('resultTime');
+  const nextBtn = document.getElementById('nextBtn');
 
-    const cleanup = () => {
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
+  const manualIdInput = document.getElementById('manualId');
+  const manualBtn = document.getElementById('manualBtn');
+
+  // Baca parameter URL atau fallback kepada sessionStorage
+  const qs = new URLSearchParams(location.search);
+  let apiUrl = qs.get('api') || sessionStorage.getItem('pmks_api_url') || '';
+  let token = qs.get('token') || sessionStorage.getItem('pmks_token') || '';
+
+  // Simpan dalam storage untuk ketahanan jika user tersilap refresh page
+  if (qs.get('api')) sessionStorage.setItem('pmks_api_url', apiUrl);
+  if (qs.get('token')) sessionStorage.setItem('pmks_token', token);
+
+  // Bersihkan bar alamat pelayar daripada mendedahkan token
+  if (qs.has('token')) {
+    try {
+      history.replaceState(null, '', location.pathname);
+    } catch (e) {}
+  }
+
+  let scanner = null;
+  let running = false;
+  let processing = false;
+
+  function status(msg, type) {
+    statusEl.className = 'status ' + (type || '');
+    statusEl.textContent = msg;
+  }
+
+  function extractId(raw) {
+    const text = String(raw || '').trim();
+    const match = text.match(/PMKS2026-\d{3,}/i);
+    return match ? match[0].toUpperCase() : '';
+  }
+
+  function jsonp(action, id = '') {
+    return new Promise((resolve, reject) => {
+      if (!apiUrl) {
+        return reject(new Error('URL API Apps Script tidak ditemui. Sila buka semula dari pautan CheckIn.'));
       }
-      try {
-        delete window[callback];
-      } catch (e) {
-        window[callback] = undefined;
-      }
-    };
 
-    const timer = setTimeout(() => {
-      if (finished) return;
-      finished = true;
-      cleanup();
-      reject(new Error(
-        'TIMEOUT: Tiada respons dalam 20 saat. Semak URL deployment, akses Web App dan sambungan internet.'
-      ));
-    }, 20000);
+      const callbackName = 'pmksCallback_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+      const script = document.createElement('script');
+      let finished = false;
 
-    window[callback] = (data) => {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timer);
-      cleanup();
-      resolve(data);
-    };
+      const cleanup = () => {
+        if (script.parentNode) script.parentNode.removeChild(script);
+        try {
+          delete window[callbackName];
+        } catch (e) {
+          window[callbackName] = undefined;
+        }
+      };
 
-    const sep = apiUrl.includes('?') ? '&' : '?';
-    const params = new URLSearchParams({
-      api: action,
-      callback: callback,
-      token: token,
-      ts: String(Date.now())
+      const timer = setTimeout(() => {
+        if (finished) return;
+        finished = true;
+        cleanup();
+        reject(new Error(
+          'TIMEOUT: Pelayan tidak membalas dalam 25 saat.\n' +
+          'Pastikan deployment Web App ditetapkan kepada "Who has access: Anyone".'
+        ));
+      }, 25000);
+
+      window[callbackName] = (data) => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        cleanup();
+        resolve(data);
+      };
+
+      const sep = apiUrl.includes('?') ? '&' : '?';
+      const params = new URLSearchParams({
+        api: action,
+        callback: callbackName,
+        token: token,
+        ts: String(Date.now())
+      });
+
+      if (id) params.set('id', id);
+
+      script.src = apiUrl + sep + params.toString();
+
+      script.onerror = () => {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        cleanup();
+        reject(new Error(
+          'SCRIPT_LOAD_ERROR:\n' +
+          '1. Pastikan Web App Apps Script disetkan kepada "Anyone" (bukan domain terhad).\n' +
+          '2. Semak jika URL deployment /exec adalah tepat.'
+        ));
+      };
+
+      document.body.appendChild(script);
     });
-
-    if (id) params.set('id', id);
-
-    script.src = apiUrl + sep + params.toString();
-
-    script.onerror = () => {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timer);
-      cleanup();
-      reject(new Error(
-        'SCRIPT_LOAD_ERROR: Skrip respons gagal dimuatkan. Semak URL /exec, akses MyGovUC atau sekatan rangkaian.'
-      ));
-    };
-
-    document.body.appendChild(script);
-  });
-}
-
-async function testConnection() {
-  if (!apiUrl || !/^https:\/\//i.test(apiUrl) || !token) {
-    status(
-      'Sesi tidak lengkap. Buka pengimbas melalui aplikasi Apps Script selepas log masuk urus setia.',
-      'bad'
-    );
-    return;
   }
 
-  testBtn.disabled = true;
-  status('Sedang menguji sambungan ke Google Apps Script…', 'warn');
-
-  try {
-    const r = await jsonp('ping');
-
-    if (r && r.success) {
-      status(
-        'SAMBUNGAN BERJAYA\n' +
-        (r.message || 'Apps Script dapat dihubungi.') +
-        (r.time ? '\nMasa pelayan: ' + r.time : ''),
-        'ok'
-      );
-    } else {
-      status(
-        'SAMBUNGAN DITERIMA, TETAPI PENGESAHAN GAGAL\n' +
-        (r && r.message ? r.message : 'Respons pelayan tidak sah.'),
-        'bad'
-      );
+  async function testConnection() {
+    if (!apiUrl || !token) {
+      status('Sesi tidak sah. Sila buka semula dari sistem CheckIn Apps Script.', 'bad');
+      return;
     }
-  } catch (err) {
-    status(
-      'UJIAN SAMBUNGAN GAGAL\n' +
-      err.message +
-      '\n\nRalat ini belum menentukan punca sebenar. Catat mesej ini untuk diagnosis seterusnya.',
-      'bad'
-    );
-  } finally {
-    testBtn.disabled = false;
-  }
-}
 
-  async function onScan(decodedText){if(processing)return;const id=getId(decodedText);if(!id){status('QR dikesan tetapi ID PMKS2026-… tidak ditemui. Sila gunakan QR pendaftaran peserta.','bad');return;}
-    processing=true;status('QR dikesan: '+id+'\nSedang mengesahkan dan merekodkan kehadiran…','warn');startBtn.disabled=true;
-    try{if(running){await scanner.stop();running=false;}stopBtn.classList.add('hidden');
-      const r = await jsonp('scan', id); resultBox.classList.remove('hidden'); resultId.textContent='ID pendaftaran: '+(r.id||id);
-      if(r.success){resultName.textContent=r.name||'Nama peserta tidak dikembalikan'; if(r.duplicate){resultTitle.textContent='⚠️ Kehadiran telah direkodkan';status(r.message||'Rekod kehadiran sedia ada.','warn');}else{resultTitle.textContent='✅ Kehadiran berjaya direkodkan';status(r.message||'Kehadiran berjaya direkodkan.','ok');}resultTime.textContent='Masa: '+(r.time||'Rujuk Google Sheets');}
-      else{resultTitle.textContent='❌ Tidak berjaya';resultName.textContent='';resultTime.textContent=r.message||'Ralat semasa merekod kehadiran.';status(r.message||'Ralat semasa merekod kehadiran.','bad');}
-    }catch(err){resultBox.classList.remove('hidden');resultTitle.textContent='❌ Sambungan bermasalah';resultName.textContent='';resultTime.textContent=err.message;status(err.message,'bad');}
-    finally{processing=false;startBtn.disabled=false;startBtn.classList.add('hidden');nextBtn.focus();}
+    testBtn.disabled = true;
+    status('Menghubungi Google Apps Script…', 'warn');
+
+    try {
+      const res = await jsonp('ping');
+      if (res && res.success) {
+        status('SAMBUNGAN BERJAYA!\n' + (res.message || '') + '\nWaktu Pelayan: ' + (res.time || '-'), 'ok');
+      } else {
+        status('RALAT PENGESAHAN:\n' + (res && res.message ? res.message : 'Sesi ditolak oleh pelayan.'), 'bad');
+      }
+    } catch (err) {
+      status(err.message, 'bad');
+    } finally {
+      testBtn.disabled = false;
+    }
   }
-  async function start(){if(!apiUrl||!/^https:\/\//i.test(apiUrl)||!token){status('Sesi tidak lengkap. Sila log masuk pada aplikasi Apps Script dan buka pengimbas melalui butang “Buka Pengimbas Kamera (GitHub Pages)”.','bad');return;}
-    if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){status('Pelayar ini tidak menyediakan akses kamera. Buka URL GitHub Pages melalui HTTPS menggunakan Safari atau Chrome terkini.','bad');return;}
-    if(typeof Html5Qrcode==='undefined'){status('Pustaka pengimbas QR gagal dimuatkan. Semak sambungan internet dan cuba muat semula halaman.','bad');return;}
-    try{scanner=scanner||new Html5Qrcode('reader');await scanner.start({facingMode:'environment'},{fps:10,qrbox:(w,h)=>{const s=Math.floor(Math.min(w,h)*.72);return {width:s,height:s};},aspectRatio:1.0},onScan,()=>{});running=true;startBtn.classList.add('hidden');stopBtn.classList.remove('hidden');status('Kamera aktif. Halakan kamera belakang kepada kod QR peserta.','ok');}
-    catch(err){const msg=err&&err.name==='NotAllowedError'?'Akses kamera ditolak. Semak tetapan Camera untuk Safari/Chrome dan pastikan laman dibuka melalui HTTPS.':(err&&err.message)||String(err);status('Tidak dapat memulakan kamera: '+msg,'bad');}
+
+  async function processRegistration(regId) {
+    if (processing) return;
+    processing = true;
+
+    status('ID dikesan: ' + regId + '\nSedang mengesahkan dengan pangkalan data…', 'warn');
+    startBtn.disabled = true;
+
+    try {
+      if (running) {
+        await stop();
+      }
+
+      const res = await jsonp('scan', regId);
+      resultBox.classList.remove('hidden');
+      resultId.textContent = 'No. Pendaftaran: ' + (res.id || regId);
+
+      if (res.success) {
+        resultName.textContent = res.name || 'Nama Tidak Ditemui';
+        if (res.duplicate) {
+          resultTitle.textContent = '⚠️ Rekod Sedia Ada';
+          resultTime.textContent = 'Status: Kehadiran telah diambil sebelum ini.';
+          status(res.message || 'Peserta ini telah hadir.', 'warn');
+        } else {
+          resultTitle.textContent = '✅ Kehadiran Disahkan';
+          resultTime.textContent = 'Waktu Daftar: ' + (res.time || 'Kini');
+          status(res.message || 'Berjaya direkodkan ke Google Sheets.', 'ok');
+        }
+      } else {
+        resultTitle.textContent = '❌ Tidak Berjaya';
+        resultName.textContent = '-';
+        resultTime.textContent = res.message || 'ID tidak dijumpai dalam senarai.';
+        status(res.message || 'Ralat pengesahan kehadiran.', 'bad');
+      }
+    } catch (err) {
+      resultBox.classList.remove('hidden');
+      resultTitle.textContent = '❌ Ralat Sambungan';
+      resultName.textContent = '-';
+      resultTime.textContent = err.message;
+      status(err.message, 'bad');
+    } finally {
+      processing = false;
+      startBtn.disabled = false;
+      startBtn.classList.add('hidden');
+    }
   }
-  async function stop(){try{if(scanner&&running){await scanner.stop();running=false;}if(scanner){try{await scanner.clear();}catch(e){}}}catch(e){}stopBtn.classList.add('hidden');startBtn.classList.remove('hidden');status('Kamera dihentikan.','warn');}
+
+  async function start() {
+    if (!apiUrl || !token) {
+      status('Sesi log masuk tiada. Sila buka melalui aplikasi asal selepas log masuk.', 'bad');
+      return;
+    }
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status('Pelayar ini tidak menyokong akses kamera. Sila gunakan pelayar terkini pada protokol HTTPS.', 'bad');
+      return;
+    }
+
+    if (typeof Html5Qrcode === 'undefined') {
+      status('Gagal memuat turun pustaka pengimbas. Semak sambungan data anda.', 'bad');
+      return;
+    }
+
+    try {
+      scanner = scanner || new Html5Qrcode('reader');
+      await scanner.start(
+        { facingMode: 'environment' },
+        {
+          fps: 10,
+          qrbox: (w, h) => {
+            const size = Math.floor(Math.min(w, h) * 0.72);
+            return { width: size, height: size };
+          },
+          aspectRatio: 1.0
+        },
+        (decodedText) => {
+          const id = extractId(decodedText);
+          if (id) {
+            processRegistration(id);
+          } else {
+            status('QR dikesan tetapi format ID tidak sah. Kod mesti mengandungi PMKS2026-XXXX.', 'bad');
+          }
+        },
+        () => {}
+      );
+
+      running = true;
+      startBtn.classList.add('hidden');
+      stopBtn.classList.remove('hidden');
+      status('Kamera aktif. Arahkan lensa ke kod QR peserta.', 'ok');
+    } catch (err) {
+      const isDenied = err && err.name === 'NotAllowedError';
+      const msg = isDenied 
+        ? 'Akses kamera disekat oleh pelayar. Sila berikan kebenaran kamera di tetapan pelayar.'
+        : (err.message || String(err));
+      status('Gagal mengaktifkan kamera: ' + msg, 'bad');
+    }
+  }
+
+  async function stop() {
+    if (scanner && running) {
+      try {
+        await scanner.stop();
+      } catch (e) {}
+      running = false;
+    }
+    stopBtn.classList.add('hidden');
+    startBtn.classList.remove('hidden');
+    status('Kamera dihentikan.', 'warn');
+  }
+
+  // Event Listeners
   testBtn.addEventListener('click', testConnection);
-startBtn.addEventListener('click', start);
-stopBtn.addEventListener('click', stop);
-  nextBtn.addEventListener('click',async()=>{resultBox.classList.add('hidden');startBtn.classList.remove('hidden');startBtn.disabled=false;await start();});
-  if(!apiUrl||!token)status('Sila buka pengimbas daripada aplikasi Apps Script selepas log masuk urus setia. Sesi pengimbas sah selama 30 minit.','bad');
-  else status('Sesi diterima. Tekan “Mula Imbas QR” dan benarkan akses kamera.','ok');
+  startBtn.addEventListener('click', start);
+  stopBtn.addEventListener('click', stop);
+
+  nextBtn.addEventListener('click', async () => {
+    resultBox.classList.add('hidden');
+    await start();
+  });
+
+  manualBtn.addEventListener('click', () => {
+    const val = extractId(manualIdInput.value);
+    if (!val) {
+      alert('Sila masukkan format ID pendaftaran yang sah (cth: PMKS2026-0001)');
+      return;
+    }
+    manualIdInput.value = '';
+    processRegistration(val);
+  });
+
+  // Semakan permulaan
+  if (!apiUrl || !token) {
+    status('Sesi tidak ditemui. Sila buat log masuk urus setia di portal Apps Script terlebih dahulu.', 'bad');
+  } else {
+    status('Sesi pengimbas sedia. Tekan "🔌 Uji Sambungan" atau "📷 Mula Imbas QR".', 'ok');
+  }
 })();
-</script></body></html>
+</script>
+</body>
+</html>
