@@ -41,7 +41,13 @@ const stopBtn = document.getElementById('stopBtn');
 const testBtn = document.getElementById('testBtn');
   const resultBox=document.getElementById('result'), resultTitle=document.getElementById('resultTitle'), resultName=document.getElementById('resultName'), resultId=document.getElementById('resultId'), resultTime=document.getElementById('resultTime'), nextBtn=document.getElementById('nextBtn');
   const qs=new URLSearchParams(location.search);
-  const apiUrl=qs.get('api')||''; let token=qs.get('token')||'';
+  const apiUrl=qs.get('api')||''; 
+  console.log(
+  'API URL diterima:',
+  apiUrl ? new URL(apiUrl).origin + new URL(apiUrl).pathname : 'KOSONG'
+);
+  
+  let token=qs.get('token')||'';
   // Buang token daripada bar alamat sebaik sahaja dibaca.
   try{history.replaceState(null,'',location.pathname);}catch(e){}
   let scanner=null, running=false, processing=false;
