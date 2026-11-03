@@ -167,9 +167,11 @@
   const manualBtn = document.getElementById('manualBtn');
 
   // Baca parameter URL atau fallback kepada sessionStorage
+ 
+
   const qs = new URLSearchParams(location.search);
-  let apiUrl = qs.get('api') || sessionStorage.getItem('pmks_api_url') || '';
-  let token = qs.get('token') || sessionStorage.getItem('pmks_token') || '';
+let apiUrl = 'https://script.google.com/macros/s/AKfycbzJr_LKJOaUZvu4A6mB45vKmjCmJGi6Yx9TrFur7629CRI9Yx5fkJHcBdjdpcju8wlhPQ/exec';
+let token = qs.get('token') || sessionStorage.getItem('pmks_token') || 'pmks_active';
 
   // Simpan dalam storage untuk ketahanan jika user tersilap refresh page
   if (qs.get('api')) sessionStorage.setItem('pmks_api_url', apiUrl);
