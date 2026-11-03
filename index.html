@@ -3,125 +3,64 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>PMKS UPGR8 - Pengimbas Langsung</title>
+  <title>PMKS UPGR8 - Pengimbas Kamera</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
-    :root {
-      --primary: #124b8c;
-      --bg: #f0f4f8;
-      --card: #ffffff;
-      --text: #1e293b;
-    }
+    :root { --primary: #124b8c; --bg: #f0f4f8; --card: #ffffff; --text: #1e293b; }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 12px;
-      background: var(--bg);
-      font-family: system-ui, -apple-system, sans-serif;
-      color: var(--text);
-    }
+    body { margin: 0; padding: 12px; background: var(--bg); font-family: system-ui, -apple-system, sans-serif; color: var(--text); }
     .wrap { max-width: 480px; margin: 0 auto; }
-    .header {
-      background: #102a43;
-      color: white;
-      padding: 16px;
-      border-radius: 12px 12px 0 0;
-      text-align: center;
-    }
-    .header h1 { margin: 0; font-size: 20px; }
-    .header p { margin: 4px 0 0; font-size: 13px; opacity: 0.85; }
-    .main-box {
-      background: var(--card);
-      padding: 16px;
-      border-radius: 0 0 12px 12px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-    }
-    #reader {
-      width: 100%;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 2px solid #cbd5e1;
-      background: #000;
-      min-height: 250px;
-    }
-    .status {
-      padding: 10px 12px;
-      border-radius: 8px;
-      margin: 10px 0;
-      font-size: 13px;
-      line-height: 1.4;
-      white-space: pre-line;
-      text-align: center;
-    }
+    .header { background: #102a43; color: white; padding: 16px; border-radius: 12px 12px 0 0; text-align: center; }
+    .main-box { background: var(--card); padding: 16px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+    #reader { width: 100%; border-radius: 10px; overflow: hidden; border: 2px solid #cbd5e1; background: #000; min-height: 250px; }
+    .status { padding: 10px 12px; border-radius: 8px; margin: 10px 0; font-size: 13px; line-height: 1.4; text-align: center; }
     .ok { background: #dcfce7; color: #166534; font-weight: 600; }
     .warn { background: #fef9c3; color: #854d0e; }
     .bad { background: #fee2e2; color: #991b1b; }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: 0;
-      border-radius: 8px;
-      background: var(--primary);
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    .result-card {
-      margin-top: 12px;
-      padding: 14px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e1;
-      background: #f8fafc;
-      text-align: center;
-    }
-    .res-id { font-size: 16px; color: #0f172a; font-weight: 700; }
-    .res-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 6px;
-    }
-    .badge-ok { background: #22c55e; color: white; }
+    button { width: 100%; padding: 12px; border: 0; border-radius: 8px; background: var(--primary); color: white; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+    button.danger { background: #b91c1c; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 <div class="wrap">
   <div class="header">
-    <h1>PMKS UPGR8</h1>
-    <p>Pengimbas Kehadiran Urus Setia</p>
+    <h1 style="margin:0; font-size:18px;">PMKS UPGR8</h1>
+    <p style="margin:4px 0 0; font-size:12px; opacity:0.85;">Pengimbas Kamera Urus Setia</p>
   </div>
 
   <div class="main-box">
-    <div id="status" class="status warn">Sedia untuk mengimbas. Sila mulakan kamera.</div>
+    <div id="status" class="status warn">Memeriksa kebenaran sesi urus setia…</div>
 
-    <!-- Tetingkap Video Kamera -->
-    <div id="reader"></div>
+    <!-- Tetingkap Kamera (Hanya dipaparkan jika ada token sah) -->
+    <div id="cameraArea" class="hidden">
+      <div id="reader"></div>
+      <button id="camToggleBtn" type="button">📷 Buka Kamera Imbasan</button>
+      <button id="closeTabBtn" class="danger" type="button">🔒 Tutup Pengimbas</button>
+    </div>
 
-    <button id="camToggleBtn" type="button">📷 Buka Kamera Imbasan</button>
-
-    <!-- Keputusan Imbasan -->
-    <div id="resultBox" class="result-card hidden">
-      <div id="badge" class="res-badge badge-ok">DIHANTAR KE GOOGLE SHEETS</div>
-      <div id="resId" class="res-id" style="margin-top: 6px;">-</div>
-      <div id="resTime" style="font-size: 12px; color: #64748b; margin-top: 4px;">Data sedang diproses...</div>
+    <!-- Paparan Jika Akses Tanpa Token / Standalone -->
+    <div id="unauthorizedArea" class="hidden" style="text-align:center; padding: 25px 12px;">
+      <div style="font-size: 36px; margin-bottom: 8px;">🚫</div>
+      <h3 style="color:#b91c1c; margin: 0 0 8px;">Akses Tidak Dibenarkan</h3>
+      <p style="font-size:13px; color:#64748b; line-height: 1.5;">
+        Pengimbas ini tidak boleh dibuka secara terus (standalone). Sila buka melalui portal urus setia selepas memasukkan PIN pengesahan.
+      </p>
     </div>
   </div>
 </div>
 
 <script>
-  // URL deployment Web App /exec terkini anda:
   const API_URL = "https://script.google.com/macros/s/AKfycbzJr_LKJOaUZvu4A6mB45vKmjCmJGi6Yx9TrFur7629CRI9Yx5fkJHcBdjdpcju8wlhPQ/exec";
 
+  const qs = new URLSearchParams(location.search);
+  const sessionToken = qs.get('token') || '';
+
   const statusEl = document.getElementById('status');
+  const cameraArea = document.getElementById('cameraArea');
+  const unauthorizedArea = document.getElementById('unauthorizedArea');
   const camToggleBtn = document.getElementById('camToggleBtn');
-  const resultBox = document.getElementById('resultBox');
-  const resId = document.getElementById('resId');
-  const resTime = document.getElementById('resTime');
+  const closeTabBtn = document.getElementById('closeTabBtn');
 
   let html5QrCode = null;
   let isScanning = false;
@@ -132,18 +71,37 @@
     statusEl.textContent = msg;
   }
 
+  // 1. KAWALAN KESELAMATAN: Jika tiada parameter token, sekat serta-merta
+  if (!sessionToken) {
+    blockAccess();
+  } else {
+    cameraArea.classList.remove('hidden');
+    setStatus('Sesi disahkan. Tekan butang di bawah untuk membuka kamera.', 'ok');
+  }
+
+  function blockAccess() {
+    if (html5QrCode && isScanning) {
+      try { html5QrCode.stop(); } catch(e){}
+    }
+    cameraArea.classList.add('hidden');
+    unauthorizedArea.classList.remove('hidden');
+    setStatus('Akses disekat: Sesi tidak sah atau telah dikunci.', 'bad');
+  }
+
+  // 2. HANTAR IMBASAN BERSAMA TOKEN
   async function sendScan(regId) {
     if (isLocked) return;
     isLocked = true;
-    setStatus('Menghantar pendaftaran: ' + regId + '...', 'warn');
+    setStatus('Mengesahkan pendaftaran: ' + regId + '...', 'warn');
 
     try {
-      // Hantar data menggunakan URL-encoded form data (paling dipercayai oleh Apps Script)
+      const payload = 'action=scan&id=' + encodeURIComponent(regId) + '&token=' + encodeURIComponent(sessionToken);
+      
       await fetch(API_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'id=' + encodeURIComponent(regId)
+        body: payload
       });
 
       setStatus('✅ ID ' + regId + ' berjaya dihantar ke Google Sheets!', 'ok');
@@ -152,23 +110,28 @@
     } finally {
       setTimeout(() => {
         isLocked = false;
-        setStatus('Kamera sedia. Halakan ke kod QR seterusnya.', 'ok');
+        setStatus('Kamera sedia untuk kod QR seterusnya.', 'ok');
       }, 2500);
     }
   }
 
+  // 3. BUTANG TUTUP PENGIMBAS DI GITHUB
+  closeTabBtn.addEventListener('click', async function() {
+    if (html5QrCode && isScanning) {
+      await html5QrCode.stop();
+    }
+    window.close();
+    // Jika pelayar sekat window.close(), paparkan status disekat
+    blockAccess();
+  });
+
+  // 4. HIDUPKAN / MATIKAN KAMERA
   async function startScanner() {
     try {
       html5QrCode = html5QrCode || new Html5Qrcode('reader');
-      setStatus('Menghidupkan kamera video...', 'warn');
-
       await html5QrCode.start(
         { facingMode: "environment" },
-        {
-          fps: 15,
-          qrbox: { width: 220, height: 220 },
-          aspectRatio: 1.0
-        },
+        { fps: 15, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
         (decodedText) => {
           const match = String(decodedText).match(/PMKS2026-\d{3,}/i);
           if (match && !isLocked) {
@@ -177,12 +140,11 @@
         },
         () => {}
       );
-
       isScanning = true;
       camToggleBtn.textContent = '⏹️ Hentikan Kamera';
       setStatus('Kamera aktif. Halakan ke kod QR peserta.', 'ok');
-    } catch (err) {
-      setStatus('Akses kamera gagal: ' + err.message + '\nSila benarkan akses kamera pelayar.', 'bad');
+    } catch(err) {
+      setStatus('Gagal membuka kamera: ' + err.message, 'bad');
     }
   }
 
@@ -196,11 +158,8 @@
   }
 
   camToggleBtn.addEventListener('click', async () => {
-    if (isScanning) {
-      await stopScanner();
-    } else {
-      await startScanner();
-    }
+    if (isScanning) await stopScanner();
+    else await startScanner();
   });
 </script>
 </body>
