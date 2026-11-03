@@ -154,36 +154,55 @@
       startBtn.disabled = false;
     }
 
-    async function onScanSuccess(decodedText) {
-      if (redirecting) return;
+   async function onScanSuccess(decodedText) {
+  if (redirecting) return;
 
-      const id = extractRegistrationId(decodedText);
+  const id = extractRegistrationId(decodedText);
 
-      if (!id) {
-        showMessage(
-          'QR tidak dikenali. Sila gunakan QR pendaftaran PMKS UPGR8.',
-          true
-        );
-        return;
-      }
+  if (!id) {
+    showMessage(
+      'QR tidak dikenali. Sila gunakan QR pendaftaran PMKS UPGR8.',
+      true
+    );
+    return;
+  }
 
-      redirecting = true;
-      startBtn.disabled = true;
-      stopBtn.disabled = true;
+  redirecting = true;
+  startBtn.disabled = true;
+  stopBtn.disabled = true;
 
-      showMessage(
-        'QR berjaya dibaca: ' + id +
-        '\nMembuka sistem untuk mengesahkan kehadiran…'
-      );
+  try {
+    // Hentikan kamera selepas QR berjaya dibaca
+    await stopScanner();
 
-      await stopScanner();
+    // Bina URL Apps Script dengan ID peserta
+    const destination = new URL(APPS_SCRIPT_URL);
+    destination.searchParams.set('id', id);
 
-      const destination = new URL(APPS_SCRIPT_URL);
-      destination.searchParams.set('id', id);
+    // Paparkan maklumat debug sebelum redirect
+    showMessage(
+      'DEBUG SCANNER\n' +
+      'ID QR: ' + id + '\n' +
+      'URL sasaran:\n' + destination.toString() +
+      '\n\nMembuka sistem kehadiran...'
+    );
 
-      // Navigasi halaman penuh, bukan fetch/API silang domain.
+    // Beri masa untuk membaca maklumat debug
+    setTimeout(function () {
       window.location.assign(destination.toString());
-    }
+    }, 3000);
+
+  } catch (err) {
+    redirecting = false;
+    startBtn.disabled = false;
+    stopBtn.disabled = false;
+
+    showMessage(
+      'Ralat semasa memproses QR: ' + err.message,
+      true
+    );
+  }
+}
 
     async function startScanner() {
       if (running || redirecting) return;
